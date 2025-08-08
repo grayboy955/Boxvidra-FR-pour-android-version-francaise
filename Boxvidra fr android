@@ -1,0 +1,155 @@
+#!/bin/bash
+pkg install root-repo -y
+
+echo -e "\e[36m[+] Installation des paquets requis\e[0m"termux-setup-storage
+pkg update -y
+
+pkg upgrade -y
+pkg install wget
+pkg install git -y
+pkg install hashdeep -y
+pkg install x11-repo
+clear
+
+echo -e "\e[33m[i] Configuration des permissions de stockage..\e[0m"
+yes | termux-setup-storage &>/dev/null
+sleep 2
+clear
+while true; do
+if [ -d ~/storage/shared ]; then
+break
+else
+echo -e "\e[31m[ERR] Permission de stockage refusée\e[0m"
+fi
+done
+clear
+sleep 2
+
+echo -e "\e[36m[+] Installation de Termux-am\e[0m"
+pkg install termux-am -y &>/dev/null
+echo -e "\e[32m[âœ“] Installation réussie de Termux-am\e[0m"
+echo -e "\n"
+clear
+if [ -e $PREFIX/glibc ]; then
+echo -n "Suppression de la glibc précédente. Continuer ? (Y/n) "
+read i
+if [ "$i" = "Y" ] || [ "$i" = "y" ]; then
+rm -rf $PREFIX/glibc
+else
+return 1
+fi
+fi
+
+INSTALL_WOW64=0
+
+echo "Sélectionner une option"
+echo "1) Installer Boxvidra avec la build box86 (6 juin)"
+echo "2) Installer Boxvidra avec la build wow64 (version complète)"
+echo ""
+echo -n "Numéro sélectionné : "
+read i
+case "$i" in
+1)
+echo -e "\e[36m[+] Installation de Boxvidra Box86 build\e[0m"
+wget -q --show-progress -O /data/data/com.termux/files/usr/glibc.box86.tar.xz https://github.com/AGENT404TRD/BOXVIDRA-EMULATOR/releases/download/Glibc/glibc.box86.tar.xz
+sleep 2
+echo -e "\e[33m[i] Extraction de la version Box86 de la glibc...\e[0m"
+tar -xf /data/data/com.termux/files/usr/glibc.box86.tar.xz -C /data/data/com.termux/files/usr/
+cp /data/data/com.termux/files/usr/glibc/opt/scripts/boxvidra /data/data/com.termux/files/usr/bin
+cp /data/data/com.termux/files/usr/glibc/opt/scripts/vidra /data/data/com.termux/files/usr/bin
+chmod +x /data/data/com.termux/files/usr/glibc/opt/scripts/*
+chmod 777 /data/data/com.termux/files/usr/bin/boxvidra
+chmod 777 /data/data/com.termux/files/usr/bin/boxvidra
+rm /data/data/com.termux/files/usr/glibc.box86.tar.xz
+echo -e "\n"
+echo -e "\e[32m[âœ“] Boxvidra Box86 build installé avec succès.\e[0m"
+;;
+2)
+echo -e "\e[36m[+] Installation de Boxvidra Wow64 build\e[0m"
+wget -q --show-progress -O /data/data/com.termux/files/usr/glibc.wow64.tar.xz https://github.com/AGENT404TRD/BOXVIDRA-EMULATOR/releases/download/Glibc/glibc.wow64.tar.xz
+sleep 2
+echo -e "\e[33m[i] Extraction de la version Wow64 glibc...\e[0m"
+tar -xf /data/data/com.termux/files/usr/glibc.wow64.tar.xz -C /data/data/com.termux/files/usr/
+cp /data/data/com.termux/files/usr/glibc/opt/scripts/boxvidra /data/data/com.termux/files/usr/bin
+chmod +x /data/data/com.termux/files/usr/glibc/opt/scripts/*
+chmod 777 /data/data/com.termux/files/usr/bin/boxvidra
+rm /data/data/com.termux/files/usr/glibc.wow64.tar.xz
+echo -e "\n"
+echo -e "\e[32m[âœ“] Build Boxvidra Wow64 installé avec succès.\e[0m"
+;;
+*)
+return 1
+;;
+esac
+
+clear
+sleep 2
+echo -e "\e[32m[+] Installation des paquets Termux...\e[0m"
+apt-get clean -y
+apt-get update -y
+apt-get upgrade -y
+pkg install wget -y
+pkg install root-repo -y
+apt-get -y --with-new-pkgs -o Dpkg::Options::="--force-confdef" upgrade
+echo -e "\e[32m[âœ“] Paquets Termux installés avec succès.\e[0m"
+echo -e "\n"
+clear
+
+echo -e "\e[36m[+] Installation des paquets Termux X11...\e[0m"
+pkg install x11-repo -y &>/dev/null
+pkg install termux-x11-nightly -y &>/dev/null
+echo -e "\e[32m[âœ“] Paquets Termux X11 installés avec succès.\e[0m"
+echo -e "\n"
+
+echo -e "\e[36m[+] Installation des paquets de l'émulateur Boxvidra...\e[0m"
+pkg install tur-repo -y &>/dev/null
+pkg install xwayland -y &>/dev/null
+pkg install xorg-xrandr -y &>/dev/null
+pkg install p7zip -y &>/dev/null
+pkg install patchelf -y &>/dev/null
+pkg install ncurses-utils -y &>/dev/null
+pkg install hashdeep -y &>/dev/null
+pkg install mesa-zink virglrenderer-mesa-zink vulkan-loader-android virglrenderer-android -y &>/dev/null
+apt install android-tools -y &>/dev/null
+pkg install python-tkinter -y &>/dev/null
+echo -e "\e[32m[âœ“] Paquets de l'émulateur Boxvidra installés avec succès.\e[0m"
+echo -e "\n"
+sleep 3
+clear
+
+echo -e "\e[36m[+] Installation de Xfce4, des plugins et des outils\e[0m"
+echo -e "\n"
+pkg install xfce4 -y
+apt install xfce4-whiskermenu-plugin -y
+apt install xfce4-screenshooter -y
+apt install xfce4-taskmanager -y
+apt install xfce4-docklike-plugin -y
+apt install matchbox-keyboard -y
+echo -e "\e[32m[âœ“] Xfce4, plugins, outils, paquets, installés avec succès.\e[0m"
+echo -e "\n"
+sleep 3
+clear
+
+echo -e "\e[36m[+] Installation des programmes d'émulation Boxvidra, navigateurs, etc.\e[0m"
+echo -e "\n"
+pkg install gimp -y
+pkg install mpv -y
+pkg install firefox -y
+pkg install vlc -y
+pkg install vlc-qt -y
+pkg install abiword -y
+apt install ristretto -y
+echo -e "\n"
+echo -e "\e[32m[âœ“] Émulateur Boxvidra, navigateurs et autres applications installés avec succès.\e[0m"
+clear
+sleep 3
+
+# CRÉER UN FICHIER BUREAU
+if [ ! -d ~/Desktop ]; then
+mkdir -p ~/Desktop
+fi
+
+echo "Sélectionner un thème à télécharger/installer"
+echo "1) Thème clair de Windows 10"
+echo "2) Thème sombre de Windows 10"
+echo "3) Windows
